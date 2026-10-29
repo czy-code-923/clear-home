@@ -40,7 +40,11 @@ try{
  const bad=structuredClone(fixture);bad.sites[0].url='javascript:alert(1)';r=await a.request('PUT','state',{revision:2,data:bad});ok(r.status===422,'unsafe URL rejected by server');
  const dup=structuredClone(fixture);dup.categories[1].id=dup.categories[0].id;r=await a.request('PUT','state',{revision:2,data:dup});ok(r.status===422,'invalid backup rejected by server');
  await stop();await start();const c=new Client();r=await c.request();ok(r.revision===2&&r.data.sites.length===12,'disk persistence survives PHP restart');
- r=await fetch(base+'/navigation.json');ok(r.status===404,'private navigation file not publicly served');
+ r=await fetch(base+'/navigation.json');
+ // Some PHP development-server versions fall back to the public index page.
+ // Accept only a 404 or that exact public page; private data must never be returned.
+ const privatePathBody=await r.text(),publicIndex=await readFile(path.join(root,'index.html'),'utf8');
+ ok(r.status===404||(r.status===200&&privatePathBody===publicIndex),`private navigation file not publicly served (HTTP ${r.status})`);
  await a.request();r=await a.request('PUT','state',{revision:2,data:fixture});ok(r.status===200,'delete/import replacement saves');
  await b.request();const results=await Promise.all([a.request('PUT','state',{revision:3,data:fixture}),b.request('PUT','state',{revision:3,data:edited})]);ok(results.filter(x=>x.status===200).length===1&&results.filter(x=>x.status===409).length===1,'simultaneous writers cannot overwrite each other');await a.request('POST','logout',{});await a.request();r=await a.request('PUT','state',{revision:3,data:edited});ok(r.status===401,'logout removes write access');
  const d=new Client();await d.request();for(let i=0;i<10;i++)await d.request('POST','login',{password:'wrong'});r=await d.request('POST','login',{password});ok(r.status===429,'login throttling survives cookie/session changes');

@@ -35,8 +35,11 @@ try{
   assert.match(response.headers.get('content-type'),/application\/json/);
   assert.match(response.headers.get('set-cookie'),/secure/i);
   assert.equal((await response.json()).revision,0);
+  const publicIndex=await readFile(path.join(pub,'index.html'),'utf8');
   for(const name of ['clear-home-config.php','clear-home-data/navigation.json','.git/config']){
-    assert.equal((await fetch(`http://127.0.0.1:${port}/${name}`)).status,404);
+    const result=await fetch(`http://127.0.0.1:${port}/${name}`),body=await result.text();
+    // A development-server fallback may serve only the exact public homepage.
+    assert.ok(result.status===404||(result.status===200&&body===publicIndex),`${name}: unexpected HTTP ${result.status} response`);
   }
   console.log('Deployment checks passed: exact runtime files, idempotent update, adjacent private config discovery, Secure cookie, private paths not served.');
 }finally{
