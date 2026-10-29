@@ -1,0 +1,11 @@
+# Paste INSIDE your site's server {} in BaoTa -> configuration.
+# Replace socket and include paths if you changed the PHP version or installation.
+# Do not replace the entire site's existing SSL or domain configuration.
+location = /api.php {
+    try_files $uri =404;
+    client_max_body_size 5m;
+    include /www/server/nginx/conf/clear-home-fastcgi.conf;
+    fastcgi_param SCRIPT_FILENAME $document_root/api.php;
+    fastcgi_pass unix:/tmp/php-cgi-82.sock;
+    fastcgi_read_timeout 15s;
+}

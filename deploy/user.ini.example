@@ -1,0 +1,3 @@
+; Copy to public/.user.ini ONLY after replacing these with your actual paths.
+; Do not disable the server-wide open_basedir protection.
+open_basedir=/srv/clear-home/site/public/:/srv/clear-home/site/clear-home-config.php:/srv/clear-home/site/clear-home-data/:/tmp/

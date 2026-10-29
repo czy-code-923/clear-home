@@ -1,0 +1,12 @@
+{
+  "name": "clear-home",
+  "version": "2.1.0",
+  "private": true,
+  "description": "澄页：VPS 保存与多端共享个人导航首页",
+  "engines": { "node": ">=22" },
+  "scripts": {
+    "start": "node server.mjs",
+    "check": "node --check app.js && node --check sync.js && node --check server.mjs && php -l api.php && php -l scripts/prepare.php",
+    "test": "node tests/api.test.mjs && node tests/deploy.test.mjs"
+  }
+}

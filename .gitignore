@@ -1,0 +1,21 @@
+# Server-local secrets and data must never be committed.
+clear-home-config.php
+**/clear-home-config.php
+.env
+.env.*
+!.env.example
+**/clear-home-data/
+**/sessions/
+navigation.json
+navigation.lock
+login-*.json
+*.log
+*.pem
+*.key
+*.zip
+*.tar.gz
+.user.ini
+dist/
+node_modules/
+.DS_Store
+Thumbs.db

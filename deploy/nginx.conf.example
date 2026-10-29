@@ -1,0 +1,22 @@
+# Plain HTTP bootstrap / local verification. Install a valid certificate for
+# your domain before administrator login. See docs/deploy-linux.md for TLS.
+server {
+    listen 80;
+    server_name nav.example.com;
+    root /srv/clear-home/site/public;
+    index index.html;
+    client_max_body_size 5m;
+    add_header X-Content-Type-Options nosniff always;
+
+    location = /api.php {
+        try_files $uri =404;
+        include /etc/nginx/snippets/clear-home-fastcgi.conf;
+        fastcgi_param SCRIPT_FILENAME $document_root/api.php;
+        fastcgi_pass unix:/run/php/php8.2-fpm.sock;
+        fastcgi_read_timeout 15s;
+    }
+    location = /index.html { add_header Cache-Control "no-cache"; }
+    location / { try_files $uri $uri/ =404; }
+    location ~ \.php(?:/|$) { return 404; }
+    location ~ /\. { deny all; }
+}
